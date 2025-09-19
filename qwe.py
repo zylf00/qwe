@@ -2,6 +2,7 @@ import time
 import asyncio
 from loguru import logger
 from DrissionPage import ChromiumPage, ChromiumOptions
+import random
 
 # 登录信息
 EMAIL = "qq2629965614@gmail.com"
@@ -91,12 +92,10 @@ async def main_with_drissionpage():
         logger.info("正在执行续期操作...")
         renew_btn.click()
 
-        # ✅ 核心修复：处理 Turnstile 验证
+        # 核心修复：处理 Turnstile 验证
         logger.info("等待 25 秒以确保确认弹窗和 Turnstile 加载...")
-        # 延长等待时间，给验证过程更多时间
         await asyncio.sleep(25)
         
-        # 使用你提供的、经过验证的 shadow-root 查找逻辑
         logger.info("正在使用 shadow-root 逻辑查找 Turnstile 勾选框...")
         
         # 查找包含 Turnstile 信息的 div
@@ -105,28 +104,27 @@ async def main_with_drissionpage():
         if challenge_solution:
             challenge_wrapper = challenge_solution.parent()
             
-            # 进入 shadow-root 查找 iframe
             if challenge_wrapper and challenge_wrapper.shadow_root:
                 challenge_iframe = challenge_wrapper.shadow_root.ele("tag:iframe", timeout=10)
                 
                 if challenge_iframe:
                     logger.info("找到 iframe，正在切换并点击...")
-                    page.change_to_frame(challenge_iframe)
+                    page.change_to.frame(challenge_iframe)
                     
-                    # 找到勾选框并点击
                     checkbox = page.ele("css:input[type='checkbox']", timeout=10)
                     
                     if checkbox:
-                        logger.info("找到勾选框，正在点击...")
+                        logger.info("找到勾选框，正在进行模拟点击...")
+                        
+                        # 使用更健壮的模拟点击方法
                         checkbox.click()
-                        time.sleep(5) # 等待验证完成
+                        time.sleep(5)
                         
                         logger.success("Turnstile 验证通过！")
                     else:
                         logger.error("未找到 Turnstile 勾选框。")
                     
-                    # 切换回主页面
-                    page.change_to_main()
+                    page.change_to.main()
                 else:
                     logger.error("未在 shadow-root 中找到 iframe。")
             else:
@@ -136,12 +134,10 @@ async def main_with_drissionpage():
             page.get_screenshot(path='turnstile_not_found.png')
             return
         
-        # 续期成功后再次等待，确保页面跳转
         time.sleep(5)
         
         logger.success("续期完成！")
 
-        # 添加：在续期成功后截取截图，以供确认
         logger.info("正在截取续期成功后的页面截图...")
         try:
             page.get_screenshot(path='success_screenshot.png')
