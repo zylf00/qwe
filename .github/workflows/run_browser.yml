@@ -1,0 +1,26 @@
+name: Run Headed Browser
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 每天凌晨 3:00 UTC 运行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          pip install drissionpage loguru
+
+      - name: Run script with virtual display
+        run: |
+          xvfb-run -a python qwe.py
