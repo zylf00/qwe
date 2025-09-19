@@ -1,8 +1,10 @@
 name: Run Headed Browser
 
 on:
+  # This section defines the triggers for the workflow
+  workflow_dispatch:  # This will add a "Run workflow" button in the GitHub UI
   schedule:
-    - cron: '0 3 * * *' # 每天凌晨 3:00 UTC 运行
+    - cron: '0 3 * * *' # You can also keep your existing scheduled trigger
 
 jobs:
   build:
