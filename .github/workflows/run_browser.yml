@@ -1,10 +1,9 @@
 name: Run Headed Browser
 
 on:
-  # This section defines the triggers for the workflow
-  workflow_dispatch:  # This will add a "Run workflow" button in the GitHub UI
+  workflow_dispatch:
   schedule:
-    - cron: '0 3 * * *' # You can also keep your existing scheduled trigger
+    - cron: '0 3 * * *'
 
 jobs:
   build:
@@ -17,11 +16,12 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install dependencies
+      - name: Install and upgrade dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb
-          pip install drissionpage loguru
+          pip install --upgrade drissionpage  # 确保更新到最新版本
+          pip install loguru
 
       - name: Run script with virtual display
         run: |
