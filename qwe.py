@@ -109,14 +109,14 @@ async def main_with_drissionpage():
                 
                 if challenge_iframe:
                     logger.info("找到 iframe，正在切换并点击...")
-                    page.change_to.frame(challenge_iframe)
+                    # 关键修复: 恢复为与你当前库版本兼容的 API
+                    page.change_to_frame(challenge_iframe)
                     
                     checkbox = page.ele("css:input[type='checkbox']", timeout=10)
                     
                     if checkbox:
                         logger.info("找到勾选框，正在进行模拟点击...")
                         
-                        # 使用更健壮的模拟点击方法
                         checkbox.click()
                         time.sleep(5)
                         
@@ -124,7 +124,9 @@ async def main_with_drissionpage():
                     else:
                         logger.error("未找到 Turnstile 勾选框。")
                     
-                    page.change_to.main()
+                    # 切换回主页面
+                    # 关键修复: 恢复为与你当前库版本兼容的 API
+                    page.change_to_main()
                 else:
                     logger.error("未在 shadow-root 中找到 iframe。")
             else:
